@@ -1,30 +1,45 @@
 #include <iostream>
-#include <sstream>
+#include <stdio.h>
 using namespace std;
 
 int main() {
     string entrada;
     while (getline(cin, entrada)) {
-        if (entrada == "*") break;
-
-        istringstream iss(entrada);
-        string palavra;
-        char primeiraLetra = 0;
-        bool tautograma = true;
-
-        if (iss >> palavra) {
-            primeiraLetra = tolower(palavra[0]);
+        if (entrada == "*") {
+            break;
         }
 
-        while (iss >> palavra) {
-            if (tolower(palavra[0]) != primeiraLetra) {
+        char primeirasLetras[100]; 
+        int numPalavras = 0;
+        bool dentroDeUmaPalavra = false;
+
+
+        for (int i = 0; i < entrada.length(); i++) {
+            if (entrada[i] != ' ') {
+                if (!dentroDeUmaPalavra) {
+                    char letra = entrada[i];
+                    if (letra >= 'A' && letra <= 'Z') {
+                        letra = letra + 32; 
+                    }
+                    primeirasLetras[numPalavras] = letra;
+                    numPalavras++;
+                    dentroDeUmaPalavra = true;
+                }
+            } else {
+                dentroDeUmaPalavra = false;
+            }
+        }
+        bool tautograma = true;
+        for (int i = 1; i < numPalavras; i++) {
+            if (primeirasLetras[i] != primeirasLetras[0]) {
                 tautograma = false;
+                break;
             }
         }
 
         if (tautograma) {
             printf("Y\n");
-        }else {
+        } else {
             printf("N\n");
         }
     }
