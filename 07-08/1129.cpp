@@ -7,7 +7,7 @@ int main() {
     int n;
     cin >> n;
     for(int i = 0; i<n; i++) {
-        int a,b,c,d,e;
+        int a,b,c,d,e; 
         cin >> a >> b >> c >> d >> e;
         int valores[5] = {a,b,c,d,e};
         int media = (a + b + c + d + e) / 5;

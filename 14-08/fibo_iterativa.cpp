@@ -26,3 +26,4 @@ int main() {
     cout << F[x]<< endl;
     return 0;
 }
+
