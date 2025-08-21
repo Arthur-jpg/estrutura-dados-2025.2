@@ -1,0 +1,67 @@
+Que iniciativa fantástica! O hábito de planejar no papel antes de codificar é o que diferencia um bom programador. Ele evita que você se perca e ajuda a criar soluções mais limpas e eficientes.
+Aqui está um método passo a passo, adaptado da forma como os programadores experientes abordam os problemas de lógica. Tente seguir essa ordem da próxima vez que se deparar com um novo desafio.
+1. Entenda o Problema
+A primeira e mais crucial etapa é ter 100% de certeza do que o problema pede. Leia o enunciado várias vezes, se precisar.
+ * Identifique a Entrada: O que o programa vai receber? (Ex: uma linha de texto, um número, uma lista de nomes?).
+ * Identifique a Saída: O que o programa deve produzir? Qual o formato exato da resposta? (Ex: um "Y" ou "N", uma lista de números, um texto modificado?).
+ * Defina as Regras: Quais são as condições, restrições e exceções? (Ex: "A primeira letra de cada palavra deve ser a mesma", "ignore maiúsculas e minúsculas", "a entrada termina com um asterisco").
+ * Crie um Exemplo Manual: Pense em um ou dois exemplos de entrada e, passo a passo, calcule a saída esperada. Isso é fundamental para testar sua lógica depois.
+2. Divida o Problema em Partes Menores
+Um problema grande e complexo é assustador. Quebre-o em subtarefas mais simples e gerenciáveis.
+ * Problema Geral: Verificar se uma frase é um tautograma.
+ * Subtarefa 1: Como eu leio a entrada linha por linha?
+ * Subtarefa 2: Como eu sei quando a entrada acabou?
+ * Subtarefa 3: Como eu encontro a primeira letra de cada palavra?
+ * Subtarefa 4: Como eu armazeno essas primeiras letras?
+ * Subtarefa 5: Como eu comparo todas as letras para ver se são iguais?
+3. Esboce a Lógica (com Algoritmo ou Fluxograma)
+Agora, use o papel para traduzir suas subtarefas em uma sequência lógica de passos.
+ * Use um Algoritmo: Escreva a sequência de ações em linguagem natural, como se estivesse dando instruções para uma pessoa.
+   * Exemplo:
+     * Passo 1: Ler uma frase.
+     * Passo 2: Se a frase for "*", terminar o programa.
+     * Passo 3: Inicializar uma lista para guardar as primeiras letras.
+     * Passo 4: Percorrer a frase, caractere por caractere.
+     * Passo 5: Se o caractere atual for o início de uma nova palavra, pegar a letra, converter para minúscula e adicionar à lista.
+     * Passo 6: Após percorrer toda a frase, comparar a primeira letra da lista com todas as outras.
+     * Passo 7: Se todas forem iguais, imprimir "Y", caso contrário, imprimir "N".
+ * Use um Fluxograma: Como o que fizemos juntos, desenhe as caixas de ação (retângulos) e de decisão (diamantes) para visualizar o fluxo do programa. Isso é ótimo para problemas com muitas ramificações (condições if/else).
+4. Passe para o "Pseudocódigo"
+O pseudocódigo é uma forma de escrever a lógica que fica entre o algoritmo (linguagem natural) e o código real. Ele usa estruturas comuns de programação (if/else, for, while) mas ainda com descrições em texto.
+ * Exemplo:
+   ENQUANTO ler uma linha da entrada
+  SE a linha for "*" ENTÃO
+    SAIR
+  FIM SE
+
+  letras = nova lista
+  dentro_de_palavra = FALSO
+
+  PARA CADA caractere na linha
+    SE caractere NÃO É um espaço E dentro_de_palavra É FALSO ENTÃO
+      letra = caractere em minúsculo
+      ADICIONAR letra em letras
+      dentro_de_palavra = VERDADEIRO
+    SENÃO SE caractere É um espaço ENTÃO
+      dentro_de_palavra = FALSO
+    FIM SE
+  FIM PARA
+
+  tautograma = VERDADEIRO
+  PARA CADA letra em letras COMEÇANDO do segundo elemento
+    SE letra diferente da primeira_letra_da_lista ENTÃO
+      tautograma = FALSO
+      QUEBRAR
+    FIM SE
+  FIM PARA
+
+  SE tautograma É VERDADEIRO ENTÃO
+    IMPRIMIR "Y"
+  SENÃO
+    IMPRIMIR "N"
+  FIM SE
+FIM ENQUANTO
+
+5. Escreva o Código e Teste
+Só agora, com a lógica bem clara e organizada, você vai para o teclado. O processo de codificar se torna muito mais rápido, pois você já tem um mapa. Use os exemplos que você criou na primeira etapa para testar seu código e ver se ele funciona como esperado.
+Praticar essa abordagem consistentemente vai treinar seu cérebro a pensar de forma lógica e estruturada. No início, pode parecer lento, mas com o tempo, a lógica no papel e no seu cérebro se torna a mesma coisa, e você vai resolver problemas complexos com muito mais facilidade.
