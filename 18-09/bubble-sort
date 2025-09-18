@@ -1,0 +1,33 @@
+/*
+ * BUBBLE SORT - Algoritmo de Ordenação por Borbulhamento
+ * 
+ * Como funciona:
+ * - Compara elementos adjacentes e troca se estiverem fora de ordem
+ * - Os maiores elementos "borbulham" para o final do array
+ * - Otimização: para se não houver trocas (array já ordenado)
+ */
+
+void bubbleSort(int arr[], int n) {
+    bool trocou; // flag de otimização - detecta se houve troca na passada
+    
+    // Loop externo: n-1 passadas máximas
+    for (int i = 0; i < n - 1; i++) {
+        trocou = false; // assume que não haverá trocas
+        
+        // Loop interno: compara elementos adjacentes
+        // (n - i - 1) porque os últimos i elementos já estão ordenados
+        for (int j = 0; j < n - i - 1; j++) {
+            // Se atual > próximo, estão fora de ordem - TROCA!
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];      // guarda valor atual
+                arr[j] = arr[j + 1];    // atual recebe próximo
+                arr[j + 1] = temp;      // próximo recebe valor guardado
+                
+                trocou = true; // marca que houve troca
+            }
+        }
+        
+        // OTIMIZAÇÃO: se não houve trocas, array já está ordenado!
+        if (!trocou) break;
+    }
+}

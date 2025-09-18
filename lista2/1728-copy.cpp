@@ -2,44 +2,28 @@
 #include <string>
 using namespace std;
 
-int inverterNumero(int intdonumero) {
-    int numero = intdonumero;
-    int resultado = 0;
-    
-
-    
-    while (numero > 0) {
-        int digito = numero % 10;
-        
-        resultado = resultado * 10 + digito;
-        
-
-        numero = numero / 10;
+int inverterStringeTransformInt(string entrada) {
+    string invertida = "";
+    for (int i = entrada.length() - 1; i >= 0; i--) {
+        invertida += entrada[i];
     }
-        
-    return resultado;
+    return stoi(invertida);
 }
 
 int main() {
-
     string entrada;
 
     while (getline(cin, entrada)) {
         if (entrada == "0+0=0") {
+            cout << "True" << endl;
             break;
         }
-
-        // primeriro preciso criar vvariaveis para guardar os caracteres de cada número
 
         string a = "";
         string b = "";
         string c = "";
 
-        // agora preciso controlar o estado do algoritmo
-
         int estado = 0;
-
-        // preciso de percorrer por toda a string para identificar os elementos
 
         for (int i = 0; i < entrada.length(); i++) {
             char caractere = entrada[i];
@@ -58,28 +42,17 @@ int main() {
                 }
             }
         }
-
-        // agora todos os devidos caracteres já estão em cada uma das variaveis correspondentes
-        // preciso converter esses números em string e invvertelos
-
-        // convertentdo para int
-        int aInt = stoi(a);
-        int bInt = stoi(b);
-        int cInt = stoi(c);
-
-        // invertendo
-        int resultadoA = inverterNumero(aInt);
-        int resultadoB = inverterNumero(bInt);
-        int resultadoC = inverterNumero(cInt);
+        
+        int resultadoA = inverterStringeTransformInt(a);
+        int resultadoB = inverterStringeTransformInt(b);
+        int resultadoC = inverterStringeTransformInt(c);
 
         if (resultadoA + resultadoB == resultadoC) {
             cout << "True" << endl;
         } else {
             cout << "False" << endl;
         }
-
     }
-
 
     return 0;
 }
