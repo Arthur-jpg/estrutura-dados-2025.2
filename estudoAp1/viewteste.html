@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visualizador QuickSort - Step-by-step</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#94a3b8;--white:#e6eef8}
+    *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    body{margin:0;background:linear-gradient(180deg,#071021 0%, #071827 100%);color:var(--white);min-height:100vh}
+    header{padding:18px 24px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:16px;align-items:center}
+    header h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:12px;align-items:center}
+    input[type=text]{width:360px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#06111a;color:var(--white)}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:#071021;cursor:pointer}
+    button.secondary{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
+    .main{display:flex;gap:16px;padding:18px}
+    .panel{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;flex:1;min-height:420px}
+    .code-panel{width:520px;flex:0 0 520px;overflow:auto}
+    pre.code{margin:0;color:#dbeafe;line-height:1.5;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;padding:12px}
+    .line{padding:2px 8px;border-radius:6px;display:flex;gap:8px}
+    .lineNumber{width:34px;opacity:0.5;text-align:right;margin-right:8px}
+    .line.active{background:linear-gradient(90deg, rgba(255,184,107,0.08), rgba(255,255,255,0.02));border-left:3px solid var(--accent)}
+
+    .viz-panel{flex:1;display:flex;flex-direction:column;gap:12px}
+    .array-wrap{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;display:flex;align-items:flex-end;gap:6px;height:260px}
+    .bar{flex:1;min-width:20px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;transition:all 300ms ease}
+    .bar .val{font-size:12px;margin-top:6px;opacity:0.9}
+    .bar.default{background:linear-gradient(180deg,#123047,#0c2a36)}
+    .bar.pivot{background:linear-gradient(180deg,#ffb86b,#ff9f3c)}
+    .bar.compare{background:linear-gradient(180deg,#ff6b6b,#ff3b3b)}
+    .bar.swap{background:linear-gradient(180deg,#7ef9b6,#3fe59a)}
+
+    .panels-row{display:flex;gap:12px}
+    .vars, .stack{width:220px}
+    .small{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .kv{display:flex;justify-content:space-between;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.02);margin-bottom:6px}
+    .controls-bottom{display:flex;gap:8px;align-items:center;margin-top:8px}
+    input[type=range]{width:140px}
+    .status{margin-left:auto;color:var(--muted)}
+    footer{padding:12px 18px;color:var(--muted);font-size:13px}
+    @media (max-width:1000px){.main{flex-direction:column}.code-panel{width:100%;flex:unset}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>QuickSort Visualizer — execução linha-a-linha</h1>
+    <div class="controls">
+      <input id="arrInput" type="text" placeholder="Ex: 8,4,7,3,10,2,6 (ou deixe vazio para gerar aleatório)" />
+      <button id="genBtn" title="Gerar/Instrumentar">Gerar & Instrumentar</button>
+      <button id="runBtn">▶️ Run</button>
+      <button id="pauseBtn" class="secondary">⏸ Pause</button>
+      <button id="stepBackBtn" class="secondary">◀️ Step</button>
+      <button id="stepFwdBtn" class="secondary">Step ▶️</button>
+      <label style="display:flex;align-items:center;gap:6px;margin-left:8px">
+        Velocidade
+        <input id="speed" type="range" min="50" max="1200" value="400" />
+      </label>
+      <div class="status" id="status">Pronto</div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="panel code-panel">
+      <div class="small">Código instrumentado (linhas serão destacadas durante execução)</div>
+      <pre class="code" id="codeBlock"></pre>
+    </div>
+
+    <div class="panel viz-panel">
+      <div class="small">Array / Visualização</div>
+      <div id="arrayWrap" class="array-wrap"></div>
+
+      <div class="panels-row">
+        <div class="vars">
+          <div class="small">Variáveis de controle</div>
+          <div id="varLow" class="kv"><div>low</div><div id="vLow">-</div></div>
+          <div id="varHigh" class="kv"><div>high</div><div id="vHigh">-</div></div>
+          <div id="varI" class="kv"><div>i</div><div id="vI">-</div></div>
+          <div id="varJ" class="kv"><div>j</div><div id="vJ">-</div></div>
+          <div id="varPivot" class="kv"><div>pivot</div><div id="vPivot">-</div></div>
+          <div id="varPi" class="kv"><div>pi</div><div id="vPi">-</div></div>
+        </div>
+        <div class="stack">
+          <div class="small">Passo atual</div>
+          <div id="stepInfo" class="kv"><div>step</div><div id="vStep">0 / 0</div></div>
+          <div class="small" style="margin-top:8px">Evento (tipo)</div>
+          <div id="eventDesc" class="kv"><div id="evType">-</div><div id="evData">-</div></div>
+        </div>
+      </div>
+
+      <div class="controls-bottom">
+        <button id="resetBtn" class="secondary">Reset</button>
+        <div style="margin-left:auto;color:var(--muted);font-size:13px">Dica: gere pequenos arrays (≤30) para acompanhar bem</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Implementação criada para estudo: exibe as linhas do código, guarda snapshots do array e variáveis, permite avançar/retroceder e rodar a animação.
+  </footer>
+
+  <script>
+    /* ---------- CÓDIGO QUE SERÁ MOSTRADO (LINHAS NUMERADAS) ---------- */
+    const codeLines = [
+      'function quickSort(arr, low, high) {',
+      '  if (low < high) {',
+      '    let pi = partition(arr, low, high);',
+      '    quickSort(arr, low, pi - 1);',
+      '    quickSort(arr, pi + 1, high);',
+      '  }',
+      '}',
+      '',
+      'function partition(arr, low, high) {',
+      '  let pivot = arr[high];',
+      '  let i = low - 1;',
+      '  for (let j = low; j <= high - 1; j++) {',
+      '    if (arr[j] < pivot) {',
+      '      i++;',
+      '      swap(arr, i, j);',
+      '    }',
+      '  }',
+      '  swap(arr, i + 1, high);',
+      '  return i + 1;',
+      '}',
+      '',
+      'function swap(a, x, y) {',
+      '  const t = a[x]; a[x] = a[y]; a[y] = t;',
+      '}',
+    ];
+
+    const codeBlock = document.getElementById('codeBlock');
+    function renderCode() {
+      codeBlock.innerHTML = '';
+      codeLines.forEach((text, idx) => {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.dataset.line = idx + 1;
+        const num = document.createElement('span');
+        num.className = 'lineNumber';
+        num.textContent = String(idx + 1).padStart(2, ' ');
+        const content = document.createElement('span');
+        content.textContent = text;
+        line.appendChild(num);
+        line.appendChild(content);
+        codeBlock.appendChild(line);
+      });
+    }
+    renderCode();
+
+    /* ---------- TRACE (registro de passos) ---------- */
+    let trace = [];
+    function record(line, vars, arrSnapshot, event) {
+      trace.push({line, vars: Object.assign({}, vars), arr: arrSnapshot.slice(), event: event || {}});
+    }
+
+    /* ---------- ALGORITMO INSTRUMENTADO (preenche trace) ---------- */
+    function instrumentedQuickSort(inputArr) {
+      const a = inputArr.slice();
+      trace = [];
+
+      function swapArr(x, y, vars) {
+        // registra antes da troca
+        record(17, vars, a, {type: 'swap-before', i: x, j: y});
+        const tmp = a[x]; a[x] = a[y]; a[y] = tmp;
+        // registra depois da troca
+        record(18, vars, a, {type: 'swap-after', i: x, j: y});
+      }
+
+      function partition(low, high) {
+        record(9, {low, high, i: null, j: null, pivot: null}, a, {type: 'enter-partition'});
+        const pivot = a[high];
+        record(10, {low, high, i: null, j: null, pivot}, a, {type: 'pivot-set'});
+        let i = low - 1;
+        record(11, {low, high, i, j: null, pivot}, a);
+        for (let j = low; j <= high - 1; j++) {
+          record(12, {low, high, i, j, pivot}, a, {type: 'loop-iter'});
+          record(13, {low, high, i, j, pivot}, a, {type: 'compare', cmp: a[j] + ' < ' + pivot});
+          if (a[j] < pivot) {
+            record(14, {low, high, i, j, pivot}, a, {type: 'compare-true'});
+            i++;
+            record(15, {low, high, i, j, pivot}, a, {type: 'inc-i'});
+            swapArr(i, j, {low, high, i, j, pivot});
+          } else {
+            record(16, {low, high, i, j, pivot}, a, {type: 'compare-false'});
+          }
+        }
+        // coloca pivot na posicao correta
+        record(17, {low, high, i, j: high, pivot}, a, {type: 'final-swap-before'});
+        swapArr(i + 1, high, {low, high, i, j: high, pivot});
+        record(19, {low, high, i, j: high, pivot}, a, {type: 'pivot-placed', pi: i + 1});
+        return i + 1;
+      }
+
+      function qs(low, high) {
+        record(1, {low, high}, a, {type: 'enter-qs'});
+        if (low < high) {
+          record(2, {low, high}, a, {type: 'if-true'});
+          const pi = partition(low, high);
+          record(3, {low, high, pi}, a, {type: 'after-partition'});
+          qs(low, pi - 1);
+          qs(pi + 1, high);
+        } else {
+          record(6, {low, high}, a, {type: 'if-false'});
+        }
+      }
+
+      qs(0, a.length - 1);
+      // final snapshot
+      record(0, {low: null, high: null}, a, {type: 'finished'});
+      return trace;
+    }
+
+    /* ---------- UI / RENDERização ---------- */
+    const arrInput = document.getElementById('arrInput');
+    const genBtn = document.getElementById('genBtn');
+    const runBtn = document.getElementById('runBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stepBackBtn = document.getElementById('stepBackBtn');
+    const stepFwdBtn = document.getElementById('stepFwdBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const arrayWrap = document.getElementById('arrayWrap');
+    const vLow = document.getElementById('vLow');
+    const vHigh = document.getElementById('vHigh');
+    const vI = document.getElementById('vI');
+    const vJ = document.getElementById('vJ');
+    const vPivot = document.getElementById('vPivot');
+    const vPi = document.getElementById('vPi');
+    const vStep = document.getElementById('vStep');
+    const evType = document.getElementById('evType');
+    const evData = document.getElementById('evData');
+    const status = document.getElementById('status');
+    const speedInput = document.getElementById('speed');
+
+    let currentArr = [];
+    let currentStep = 0;
+    let playTimer = null;
+
+    function renderArray(arr, highlight={}){
+      arrayWrap.innerHTML = '';
+      const max = Math.max(...arr.map(v=>Math.abs(v)), 1);
+      for (let k=0;k<arr.length;k++){
+        const val = arr[k];
+        const el = document.createElement('div');
+        el.className = 'bar default';
+        if (highlight.pivot === k) el.className = 'bar pivot';
+        if (highlight.compare && highlight.compare.includes(k)) el.className = 'bar compare';
+        if (highlight.swap && highlight.swap.includes(k)) el.className = 'bar swap';
+        el.style.height = (30 + (Math.abs(val)/max)*200) + 'px';
+        const v = document.createElement('div'); v.className='val'; v.textContent = String(val);
+        el.appendChild(v);
+        arrayWrap.appendChild(el);
+      }
+    }
+
+    function highlightCodeLine(num){
+      document.querySelectorAll('.line').forEach(l=>l.classList.toggle('active', Number(l.dataset.line)===num));
+      // scroll into view
+      const el = document.querySelector(`.line[data-line=\"${num}\"]`);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+
+    function updateVars(vars){
+      vLow.textContent = vars.low==null?'-':vars.low;
+      vHigh.textContent = vars.high==null?'-':vars.high;
+      vI.textContent = vars.i==null?'-':vars.i;
+      vJ.textContent = vars.j==null?'-':vars.j;
+      vPivot.textContent = vars.pivot==null?'-':vars.pivot;
+      vPi.textContent = vars.pi==null?'-':vars.pi;
+    }
+
+    function updateStepUI(idx){
+      if(idx<0) idx=0; if(idx>=trace.length) idx=trace.length-1;
+      currentStep = idx;
+      const t = trace[currentStep];
+      vStep.textContent = (currentStep+1) + ' / ' + trace.length;
+      evType.textContent = t.event.type || '-';
+      evData.textContent = JSON.stringify(t.event).replace(/\{|\}|\"/g,'');
+      updateVars(Object.assign({pi:null}, t.vars));
+      // highlight code and array
+      highlightCodeLine(t.line);
+      // determine highlights from event
+      const h = {pivot:null, compare:[], swap:[]};
+      if(t.event.type==='pivot-set'){
+        h.pivot = t.vars.high;
+      }
+      if(t.event.type==='compare' || t.event.type==='compare-true' || t.event.type==='compare-false' || t.event.type==='loop-iter'){
+        if(t.vars.j!=null) h.compare.push(t.vars.j);
+        if(t.vars.i!=null) h.compare.push(t.vars.i);
+      }
+      if(t.event.type==='swap-after' || t.event.type==='swap-before' || t.event.type==='final-swap-before'){
+        h.swap.push(t.event.i); h.swap.push(t.event.j);
+      }
+      renderArray(t.arr, h);
+      status.textContent = 'step ' + (currentStep+1);
+    }
+
+    function buildFromInput(){
+      const raw = arrInput.value.trim();
+      if(raw.length===0){
+        // gerar aleatório
+        const n = Math.max(6, Math.min(30, Math.floor(Math.random()*12)+6));
+        const a = [];
+        for(let i=0;i<n;i++) a.push(Math.floor(Math.random()*100));
+        currentArr = a;
+      } else {
+        const parts = raw.split(',').map(s=>s.trim()).filter(s=>s.length);
+        currentArr = parts.map(x=>Number(x));
+      }
+      renderArray(currentArr);
+    }
+
+    genBtn.addEventListener('click',()=>{
+      buildFromInput();
+      trace = instrumentedQuickSort(currentArr);
+      currentStep = 0;
+      updateStepUI(0);
+      status.textContent = 'Instrumentado: ' + trace.length + ' passos';
+    });
+
+    stepFwdBtn.addEventListener('click',()=>{
+      if(!trace || trace.length===0) return;
+      if(currentStep < trace.length-1) currentStep++;
+      updateStepUI(currentStep);
+    });
+    stepBackBtn.addEventListener('click',()=>{
+      if(!trace || trace.length===0) return;
+      if(currentStep > 0) currentStep--;
+      updateStepUI(currentStep);
+    });
+
+    runBtn.addEventListener('click',()=>{
+      if(!trace || trace.length===0) return;
+      if(playTimer) return;
+      playTimer = setInterval(()=>{
+        if(currentStep < trace.length-1){
+          currentStep++;
+          updateStepUI(currentStep);
+        } else { clearInterval(playTimer); playTimer=null; status.textContent='Concluído'; }
+      }, Number(speedInput.value));
+    });
+
+    pauseBtn.addEventListener('click',()=>{ if(playTimer){ clearInterval(playTimer); playTimer=null; status.textContent='Pausado'; } });
+
+    resetBtn.addEventListener('click',()=>{
+      currentStep = 0; if(trace && trace.length) updateStepUI(0); else renderArray(currentArr); status.textContent='Reset';
+    });
+
+    // iniciar com exemplo
+    arrInput.value = '8,4,7,3,10,2,6';
+    buildFromInput();
+  </script>
+</body>
+</html>

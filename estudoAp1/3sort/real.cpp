@@ -31,6 +31,8 @@ void selection(int v[], int n) {
 }
 
 // enquanto o anteriror for maior que o proximo ele troca se não passa para o outro
+// ele difere do bubble pq o bule troca se for menor. Esse não, ele troca se for menor e compara com o resto que já foi trocado
+// exatamente o que o while faz
 void insertionSort(int v[], int n) {
     for (int i = 1; i < n; i ++) {
         int key = v[i];
