@@ -10,6 +10,10 @@ void imprimir(int v[], int n) {
     
 }
 
+// Escolhe um pivot e coloca os elementos menores a esquerda do pivot
+// e os elementos maiores na direita do pivot
+// o pivot vai estar na posição certa 
+
 int particao(int low, int high) {
 
     int pivot = v[high];
