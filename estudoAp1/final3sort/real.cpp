@@ -11,9 +11,9 @@ void imprimir(int v[], int n) {
 // ----------------------
 
 void selectionSort(int v[], int n) {
-
+    
     for (int i = 0; i < n; i++){
-        int minIndex = 0;
+        int minIndex = i;
         for (int j = i + 1; j < n; j++){
             if (v[j] < v[minIndex]) {
                 minIndex = j;
@@ -23,10 +23,24 @@ void selectionSort(int v[], int n) {
         v[i] = v[minIndex];
         v[minIndex] = aux;
     }
-
-
+    
+    
 }
 
+// ----------------------
+
+void insertionSort(int v[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = v[i]; // vai começar do 1
+        int j = i - 1; // vai começar do zero
+        while (v[j] >= 0 && v[j] > key) {
+            v[j+1] = v[j];
+            j--;
+
+        }
+        v[j+1] = key;
+    }
+}
 
 
 // ----------------------
@@ -188,6 +202,27 @@ int main() {
 
     
     /*
+    Selection sort: vamos comparar o primeiro elemento com todos os outros e guardar o menor, depois trocar eles de lugar
+    e seguir fazendo isso (sempre guardando o index do menor número)
+    Lembrando que a comparação é do indice J para o indice do menorIndex
+    Só temos a varivael menor index para poder fazer a troca depois fora do for mais interno
+    */
+    cout << "Selection --------------" << endl;
+    selectionSort(v, 10);
+    imprimir(v, 10);
+    
+    /*
+    Insertion sort: vai sempre comparar com o maior e trocar. Insere cada elemento na posição correta do subarray ordenado.
+    Então quando o proximo elemento chegar ele vai comparara com todos da subarray e colocar no lugar certo, para isso que serve o while
+    O for prinicpal vai começar com 1 para que o ponteiro j comece no i - 1 para começar do zero. Além disso temos uma key = v[i]
+    */
+    cout << "Insertion --------------" << endl;
+    insertionSort(v, 10);
+    imprimir(v, 10);
+
+
+    
+    /*
     bubbleSort: o bubble sort basicamente é um if dentro do if onde a gnt compara se o atual é maior do que próximo
     Se for troca. Fazendo isso pegando um número e comparando com todos os outros e fazendo isso n vezes
     lembrando i < n -1 e j < n - i - 1
@@ -196,15 +231,6 @@ int main() {
     bubbleSort(v, 10);
     imprimir(v, 10);
     
-    /*
-    Selection sort: vamos comparar o primeiro elemento com todos os outros e guardar o menor, depois trocar eles de lugar
-    e seguir fazendo isso
-    Lembrando que a comparação é do indice J para o indice do menorIndex
-    Só temos a varivael menor index para poder fazer a troca depois fora do for mais interno
-    */
-    cout << "Selection --------------" << endl;
-    selectionSort(v, 10);
-    imprimir(v, 10);
 
 
     /*
