@@ -31,7 +31,7 @@ int buscaBinariaInfinita(int procurando) {
         i *= 2;
     }
 
-    return buscaBinaria(0, i, procurando);
+    return buscaBinaria(i/2, i, procurando);
 
 }
 
