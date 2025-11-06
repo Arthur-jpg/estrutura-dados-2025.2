@@ -11,8 +11,7 @@ void insertionSort(int tamanho) {
         int key = v[i];
         int controle = i - 1;
         while (controle >= 0 && v[controle] > key) {
-            v[controle + 1] = v[controle];
-            controle--;
+            swap(v[j], v[j+1]);
         }
         v[controle+1] = key;
 
