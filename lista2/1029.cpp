@@ -25,6 +25,7 @@ int main() {
         variavel = 0;
         int result = fib(entrada);
         printf("fib(%d) = %d calls = %d\n", entrada, variavel-1, result);
+        cout << entrada << endl;
     }
     
     return 0;

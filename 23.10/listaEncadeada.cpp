@@ -55,7 +55,7 @@ void remover(int v) {
 
     // Se chegamos ao final e não encontramos
     if (anterior->prox == nullptr) {
-        cout << "Valor nao encontrado!" << endl;
+        cout << "Valor nao encontrado!" << endl; 
         return;
     }
 
